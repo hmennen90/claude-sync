@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "claude-device-sync",
-      "source": ".",
+      "source": "./",
       "description": "Sync Claude Code sessions, memory, and reminders across devices via encrypted Git repository",
       "version": "0.2.0",
       "author": {
