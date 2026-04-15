@@ -19,6 +19,9 @@
   "files": [
     "dist/**/*.js",
     "dist/**/*.d.ts",
+    ".claude-plugin/**",
+    "skills/**",
+    "hooks/**",
     "README.md",
     "LICENSE"
   ],

@@ -1,0 +1,24 @@
+{
+  "name": "claude-device-sync",
+  "version": "0.2.0",
+  "description": "Cross-device session storage, shared memory, and reminders for Claude Code. Sync sessions, memory files, and reminders across multiple devices via an encrypted private Git repository.",
+  "author": {
+    "name": "Hendrik Mennen",
+    "email": "hendrik@mennen.dev"
+  },
+  "homepage": "https://github.com/hmennen90/claude-device-sync#readme",
+  "repository": "https://github.com/hmennen90/claude-device-sync",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "sync",
+    "session",
+    "memory",
+    "reminders",
+    "cross-device",
+    "team",
+    "encrypted"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
+}

@@ -18,7 +18,7 @@ const program = new Command();
 program
   .name('device-sync')
   .description('Cross-device session storage, shared memory, and reminders for Claude Code')
-  .version('0.1.0');
+  .version('0.2.0');
 
 program
   .command('init')
