@@ -114,7 +114,7 @@ function findClaudeSession(): string | null {
 
   // Hash the CWD to find the project dir (Claude Code uses path-based naming)
   // On Windows, replace backslashes too
-  const projectDir = cwd.replace(/[\\/]/g, '-').replace(/^-/, '');
+  const projectDir = cwd.replace(/[\\/:]/g, '-').replace(/^-/, '');
   const possiblePath = path.join(projectsDir, projectDir);
 
   if (existsSync(possiblePath)) {
@@ -139,7 +139,7 @@ function findClaudeMemory(): string | null {
   const home = process.env.HOME ?? process.env.USERPROFILE ?? '~';
   const cwd = process.cwd();
 
-  const projectDir = cwd.replace(/[\\/]/g, '-').replace(/^-/, '');
+  const projectDir = cwd.replace(/[\\/:]/g, '-').replace(/^-/, '');
   const memoryDir = path.join(home, '.claude', 'projects', projectDir, 'memory');
 
   return existsSync(memoryDir) ? memoryDir : null;

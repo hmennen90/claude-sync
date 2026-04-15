@@ -185,6 +185,10 @@ device-sync-repo/
 
 Fixed in 0.2.1. If you're on an older version, the `init` command would crash when `~/.device-sync/repo` did not yet exist because `GitSync` instantiated `simple-git` against the not-yet-cloned directory. Upgrade with `npm install -g claude-device-sync@latest`, or as a workaround pre-create the directory (`mkdir ~/.device-sync/repo`) before running `init`.
 
+### `No memory directory found` on Windows
+
+Fixed in 0.2.2. The project-directory lookup only replaced `\` and `/`, not the drive-letter colon, so `D:\PhpstormProjects\foo` resolved to `D:-PhpstormProjects-foo` instead of Claude Code's actual `D--PhpstormProjects-foo`. Upgrade to 0.2.2 or newer.
+
 ## License
 
 MIT
