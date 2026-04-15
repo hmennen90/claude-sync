@@ -1,0 +1,29 @@
+{
+  "name": "claude-sync",
+  "version": "0.1.0",
+  "description": "Cross-device session storage, shared memory, and reminders for Claude Code",
+  "type": "module",
+  "bin": {
+    "claude-sync": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "test": "tsc && node --test dist/test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "argon2": "^0.41.1",
+    "commander": "^13.1.0",
+    "inquirer": "^12.6.0",
+    "simple-git": "^3.27.0",
+    "keytar": "^7.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.2",
+    "typescript": "^5.8.3"
+  }
+}
