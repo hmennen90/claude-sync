@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import { Command } from 'commander';
 import { init } from './commands/init.js';
 import { push } from './commands/push.js';
@@ -13,12 +16,16 @@ import { hooksInstall, hooksUninstall, hooksStatus } from './commands/hooks.js';
 import { daemonStart, daemonStop, daemonCheck, daemonStatus, daemonLog } from './commands/daemon.js';
 import { purge } from './commands/purge.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
+
 const program = new Command();
 
 program
   .name('device-sync')
   .description('Cross-device session storage, shared memory, and reminders for Claude Code')
-  .version('0.2.0');
+  .version(pkg.version);
 
 program
   .command('init')

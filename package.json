@@ -11,6 +11,9 @@
     "dev": "tsc --watch",
     "start": "node dist/cli.js",
     "test": "tsc && node --test dist/test/*.test.js",
+    "preversion": "npm run build && npm test",
+    "version": "node scripts/sync-version.js && git add .claude-plugin/plugin.json",
+    "postversion": "git push && git push --tags",
     "prepublishOnly": "npm run build"
   },
   "engines": {
@@ -22,6 +25,7 @@
     ".claude-plugin/**",
     "skills/**",
     "hooks/**",
+    "scripts/**",
     "README.md",
     "LICENSE"
   ],
