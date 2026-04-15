@@ -10,12 +10,14 @@ export interface SyncConfig {
 }
 
 export class GitSync {
-  private git: SimpleGit;
+  private git!: SimpleGit;
   private config: SyncConfig;
 
   constructor(config: SyncConfig) {
     this.config = config;
-    this.git = simpleGit(config.localPath);
+    if (existsSync(config.localPath)) {
+      this.git = simpleGit(config.localPath);
+    }
   }
 
   /**
@@ -23,9 +25,10 @@ export class GitSync {
    */
   async init(): Promise<void> {
     if (!existsSync(path.join(this.config.localPath, '.git'))) {
+      await mkdir(path.dirname(this.config.localPath), { recursive: true });
       await simpleGit().clone(this.config.repoUrl, this.config.localPath);
-      this.git = simpleGit(this.config.localPath);
     }
+    this.git = simpleGit(this.config.localPath);
   }
 
   /**

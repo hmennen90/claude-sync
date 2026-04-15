@@ -179,6 +179,12 @@ device-sync-repo/
 | Linux | Full support | libsecret + crontab daemon |
 | Windows | Full support | Credential Vault + Task Scheduler daemon |
 
+## Troubleshooting
+
+### `GitConstructError: Cannot use simple-git on a directory that does not exist`
+
+Fixed in 0.2.1. If you're on an older version, the `init` command would crash when `~/.device-sync/repo` did not yet exist because `GitSync` instantiated `simple-git` against the not-yet-cloned directory. Upgrade with `npm install -g claude-device-sync@latest`, or as a workaround pre-create the directory (`mkdir ~/.device-sync/repo`) before running `init`.
+
 ## License
 
 MIT
