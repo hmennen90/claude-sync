@@ -22,6 +22,16 @@ interface ClaudeSettings {
 }
 
 /**
+ * Wrap a command so it fails silently on both Unix and Windows.
+ */
+function silentWrap(cmd: string): string {
+  if (process.platform === 'win32') {
+    return `cmd /c "${cmd} 2>NUL || exit /b 0"`;
+  }
+  return `${cmd} 2>/dev/null || true`;
+}
+
+/**
  * The hooks claude-sync installs into Claude Code's settings.json.
  */
 function getSyncHooks(): Record<string, HookEntry[]> {
@@ -29,25 +39,25 @@ function getSyncHooks(): Record<string, HookEntry[]> {
     PreToolUse: [
       {
         matcher: '',
-        command: 'claude-sync pull --memory-only 2>/dev/null || true',
+        command: silentWrap('claude-sync pull --memory-only'),
       },
     ],
     PostToolUse: [
       {
         matcher: 'Write|Edit',
-        command: 'claude-sync push --memory-only 2>/dev/null || true',
+        command: silentWrap('claude-sync push --memory-only'),
       },
     ],
     SessionStart: [
       {
         matcher: '',
-        command: 'claude-sync pull 2>/dev/null || true',
+        command: silentWrap('claude-sync pull'),
       },
     ],
     SessionEnd: [
       {
         matcher: '',
-        command: 'claude-sync push 2>/dev/null || true',
+        command: silentWrap('claude-sync push'),
       },
     ],
   };

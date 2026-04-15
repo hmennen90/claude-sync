@@ -1,5 +1,5 @@
-import { readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { readFile, readdir } from 'node:fs/promises';
+import { existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { loadLocalConfig, loadRepoConfig } from '../config.js';
 import { retrieveKey } from '../crypto/keychain.js';
@@ -113,12 +113,12 @@ function findClaudeSession(): string | null {
   if (!existsSync(projectsDir)) return null;
 
   // Hash the CWD to find the project dir (Claude Code uses path-based naming)
-  const projectDir = cwd.replace(/\//g, '-').replace(/^-/, '');
+  // On Windows, replace backslashes too
+  const projectDir = cwd.replace(/[\\/]/g, '-').replace(/^-/, '');
   const possiblePath = path.join(projectsDir, projectDir);
 
   if (existsSync(possiblePath)) {
     // Find the most recent .jsonl conversation file
-    const { readdirSync } = require('node:fs');
     const files = readdirSync(possiblePath)
       .filter((f: string) => f.endsWith('.jsonl'))
       .sort()
@@ -139,7 +139,7 @@ function findClaudeMemory(): string | null {
   const home = process.env.HOME ?? process.env.USERPROFILE ?? '~';
   const cwd = process.cwd();
 
-  const projectDir = cwd.replace(/\//g, '-').replace(/^-/, '');
+  const projectDir = cwd.replace(/[\\/]/g, '-').replace(/^-/, '');
   const memoryDir = path.join(home, '.claude', 'projects', projectDir, 'memory');
 
   return existsSync(memoryDir) ? memoryDir : null;

@@ -10,11 +10,40 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/cli.js",
-    "test": "tsc && node --test dist/test/*.test.js"
+    "test": "tsc && node --test dist/test/*.test.js",
+    "prepublishOnly": "npm run build"
   },
   "engines": {
     "node": ">=20"
   },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "sync",
+    "session",
+    "memory",
+    "reminders",
+    "cross-device",
+    "team",
+    "encrypted",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hmennen90/claude-sync.git"
+  },
+  "homepage": "https://github.com/hmennen90/claude-sync#readme",
+  "bugs": {
+    "url": "https://github.com/hmennen90/claude-sync/issues"
+  },
+  "license": "MIT",
+  "author": "Hendrik Mennen",
   "dependencies": {
     "argon2": "^0.41.1",
     "commander": "^13.1.0",

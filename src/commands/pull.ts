@@ -71,7 +71,7 @@ export async function pull(options: { memoryOnly?: boolean }) {
 function getClaudeMemoryDir(): string | null {
   const home = process.env.HOME ?? process.env.USERPROFILE ?? '~';
   const cwd = process.cwd();
-  const projectDir = cwd.replace(/\//g, '-').replace(/^-/, '');
+  const projectDir = cwd.replace(/[\\/]/g, '-').replace(/^-/, '');
   const memoryDir = path.join(home, '.claude', 'projects', projectDir, 'memory');
 
   // Create if it doesn't exist? No — only pull if Claude Code has the structure

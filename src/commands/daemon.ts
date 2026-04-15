@@ -8,16 +8,22 @@ import { runCheck, LOG_PATH } from '../daemon/checker.js';
 const PLIST_LABEL = 'com.claude-sync.daemon';
 const PLIST_PATH = path.join(os.homedir(), 'Library', 'LaunchAgents', `${PLIST_LABEL}.plist`);
 const CRONTAB_MARKER = '# claude-sync-daemon';
+const TASK_NAME = 'ClaudeSyncDaemon';
 
-function isMacOS(): boolean {
-  return process.platform === 'darwin';
+type Platform = 'macos' | 'linux' | 'windows';
+
+function getPlatform(): Platform {
+  if (process.platform === 'darwin') return 'macos';
+  if (process.platform === 'win32') return 'windows';
+  return 'linux';
 }
 
 function getExecutablePath(): string {
   // Resolve the claude-sync binary. Prefer the globally-linked bin,
   // fall back to npx/node invocation of the compiled entry point.
+  const whichCmd = process.platform === 'win32' ? 'where claude-sync' : 'which claude-sync';
   try {
-    return execSync('which claude-sync', { encoding: 'utf-8' }).trim();
+    return execSync(whichCmd, { encoding: 'utf-8' }).trim().split('\n')[0];
   } catch {
     // Fallback: run the dist entry directly with node
     const distCli = path.resolve(import.meta.dirname, '..', '..', 'dist', 'cli.js');
@@ -159,20 +165,82 @@ function isCrontabInstalled(): boolean {
 }
 
 // ---------------------------------------------------------------------------
+// Windows: Task Scheduler
+// ---------------------------------------------------------------------------
+
+function installTaskScheduler(): void {
+  const executablePath = getExecutablePath();
+  const parts = executablePath.split(' ');
+
+  // Build the schtasks command
+  // If it's "node /path/to/cli.js", we need to set the program and args separately
+  let program: string;
+  let args: string;
+  if (parts.length > 1) {
+    program = parts[0];
+    args = [...parts.slice(1), 'daemon', 'check'].join(' ');
+  } else {
+    program = parts[0];
+    args = 'daemon check';
+  }
+
+  // Delete existing task if present (ignore error if not found)
+  try {
+    execSync(`schtasks /Delete /TN "${TASK_NAME}" /F 2>NUL`, { stdio: 'ignore' });
+  } catch { /* not found — fine */ }
+
+  // Create a new scheduled task running every 5 minutes
+  execSync(
+    `schtasks /Create /TN "${TASK_NAME}" /TR "${program} ${args}" /SC MINUTE /MO 5 /F`,
+  );
+
+  console.log(`Daemon installed (Windows Task Scheduler — every 5 minutes).`);
+  console.log(`  Task: ${TASK_NAME}`);
+  console.log(`  Log:  ${LOG_PATH}`);
+}
+
+function uninstallTaskScheduler(): void {
+  try {
+    execSync(`schtasks /Query /TN "${TASK_NAME}" 2>NUL`, { stdio: 'ignore' });
+  } catch {
+    console.log('Daemon is not installed.');
+    return;
+  }
+
+  execSync(`schtasks /Delete /TN "${TASK_NAME}" /F`);
+  console.log('Daemon removed from Task Scheduler.');
+}
+
+function isTaskSchedulerInstalled(): boolean {
+  try {
+    execSync(`schtasks /Query /TN "${TASK_NAME}" 2>NUL`, { stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Public command handlers
 // ---------------------------------------------------------------------------
 
 export async function daemonStart(): Promise<void> {
-  if (isMacOS()) {
+  const platform = getPlatform();
+  if (platform === 'macos') {
     await installLaunchd();
+  } else if (platform === 'windows') {
+    installTaskScheduler();
   } else {
     installCrontab();
   }
 }
 
 export async function daemonStop(): Promise<void> {
-  if (isMacOS()) {
+  const platform = getPlatform();
+  if (platform === 'macos') {
     await uninstallLaunchd();
+  } else if (platform === 'windows') {
+    uninstallTaskScheduler();
   } else {
     uninstallCrontab();
   }
@@ -193,12 +261,17 @@ export async function daemonCheck(): Promise<void> {
 }
 
 export async function daemonStatus(): Promise<void> {
-  const installed = isMacOS() ? isLaunchdInstalled() : isCrontabInstalled();
-  const method = isMacOS() ? 'launchd' : 'crontab';
+  const platform = getPlatform();
+  const installed = platform === 'macos'
+    ? isLaunchdInstalled()
+    : platform === 'windows'
+      ? isTaskSchedulerInstalled()
+      : isCrontabInstalled();
+  const method = platform === 'macos' ? 'launchd' : platform === 'windows' ? 'Task Scheduler' : 'crontab';
 
   console.log(`Daemon: ${installed ? 'installed' : 'not installed'} (${method})`);
 
-  if (isMacOS() && existsSync(PLIST_PATH)) {
+  if (platform === 'macos' && existsSync(PLIST_PATH)) {
     console.log(`  Plist: ${PLIST_PATH}`);
   }
 
