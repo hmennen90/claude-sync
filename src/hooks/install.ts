@@ -11,13 +11,24 @@ const SETTINGS_PATH = path.join(CLAUDE_DIR, 'settings.json');
 
 const HOOK_MARKER = 'device-sync';
 
+interface HookCommand {
+  type: 'command';
+  command: string;
+}
+
 interface HookEntry {
+  matcher: string;
+  hooks: HookCommand[];
+}
+
+/** Legacy format (pre-2026) had command directly on HookEntry */
+interface LegacyHookEntry {
   matcher: string;
   command: string;
 }
 
 interface ClaudeSettings {
-  hooks?: Record<string, HookEntry[]>;
+  hooks?: Record<string, (HookEntry | LegacyHookEntry)[]>;
   [key: string]: unknown;
 }
 
@@ -39,25 +50,25 @@ function getSyncHooks(): Record<string, HookEntry[]> {
     PreToolUse: [
       {
         matcher: '',
-        command: silentWrap('device-sync pull --memory-only'),
+        hooks: [{ type: 'command', command: silentWrap('device-sync pull --memory-only') }],
       },
     ],
     PostToolUse: [
       {
         matcher: 'Write|Edit',
-        command: silentWrap('device-sync push --memory-only'),
+        hooks: [{ type: 'command', command: silentWrap('device-sync push --memory-only') }],
       },
     ],
     SessionStart: [
       {
         matcher: '',
-        command: silentWrap('device-sync pull'),
+        hooks: [{ type: 'command', command: silentWrap('device-sync pull') }],
       },
     ],
     SessionEnd: [
       {
         matcher: '',
-        command: silentWrap('device-sync push'),
+        hooks: [{ type: 'command', command: silentWrap('device-sync push') }],
       },
     ],
   };
@@ -84,9 +95,29 @@ async function saveSettings(settings: ClaudeSettings): Promise<void> {
 
 /**
  * Check whether a hook entry was installed by device-sync.
+ * Supports both new format (hooks array) and legacy format (command directly).
  */
-function isOurHook(entry: HookEntry): boolean {
-  return entry.command.includes(HOOK_MARKER);
+function isOurHook(entry: HookEntry | LegacyHookEntry): boolean {
+  if ('hooks' in entry && Array.isArray(entry.hooks)) {
+    return entry.hooks.some((h) => h.command.includes(HOOK_MARKER));
+  }
+  if ('command' in entry && typeof entry.command === 'string') {
+    return entry.command.includes(HOOK_MARKER);
+  }
+  return false;
+}
+
+/**
+ * Extract the command string from a hook entry (new or legacy format).
+ */
+function getHookCommand(entry: HookEntry | LegacyHookEntry): string {
+  if ('hooks' in entry && Array.isArray(entry.hooks) && entry.hooks.length > 0) {
+    return entry.hooks[0].command;
+  }
+  if ('command' in entry && typeof entry.command === 'string') {
+    return entry.command;
+  }
+  return '';
 }
 
 /**
@@ -108,10 +139,23 @@ export async function installHooks(): Promise<void> {
       settings.hooks[event] = [];
     }
 
+    // Remove any legacy-format device-sync hooks first
+    const hadLegacy = settings.hooks[event].some(
+      (existing) => isOurHook(existing) && !('hooks' in existing)
+    );
+    if (hadLegacy) {
+      settings.hooks[event] = settings.hooks[event].filter(
+        (entry) => !isOurHook(entry)
+      );
+    }
+
     for (const newEntry of newEntries) {
-      // Skip if we already have this exact hook installed
+      // Skip if we already have this exact hook installed (new format)
       const alreadyExists = settings.hooks[event].some(
-        (existing) => isOurHook(existing) && existing.command === newEntry.command
+        (existing) =>
+          isOurHook(existing) &&
+          'hooks' in existing &&
+          existing.hooks[0]?.command === newEntry.hooks[0]?.command
       );
 
       if (!alreadyExists) {
@@ -185,7 +229,7 @@ export async function getHooksStatus(): Promise<{
     for (const [event, entries] of Object.entries(settings.hooks)) {
       for (const entry of entries) {
         if (isOurHook(entry)) {
-          found.push({ event, matcher: entry.matcher, command: entry.command });
+          found.push({ event, matcher: entry.matcher, command: getHookCommand(entry) });
         }
       }
     }
