@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 800 420">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap');
+      .bg { fill: #1e1e2e; }
+      .title-bar { fill: #313244; }
+      .text { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 14px; fill: #cdd6f4; }
+      .prompt { fill: #a6e3a1; }
+      .cmd { fill: #89b4fa; }
+      .arg { fill: #f9e2af; }
+      .output { fill: #bac2de; }
+      .dim { fill: #6c7086; }
+      .success { fill: #a6e3a1; }
+      .dot-red { fill: #f38ba8; }
+      .dot-yellow { fill: #f9e2af; }
+      .dot-green { fill: #a6e3a1; }
+    </style>
+  </defs>
+  <rect class="bg" width="800" height="420" rx="10"/>
+  <rect class="title-bar" width="800" height="36" rx="10 10 0 0"/>
+  <circle class="dot-red" cx="20" cy="18" r="6"/>
+  <circle class="dot-yellow" cx="40" cy="18" r="6"/>
+  <circle class="dot-green" cx="60" cy="18" r="6"/>
+  <text class="text dim" x="400" y="22" text-anchor="middle">device-sync — reminders demo</text>
+
+  <!-- Line 1: remind command -->
+  <text class="text" x="20" y="68">
+    <tspan class="prompt">$ </tspan>
+    <tspan class="cmd">device-sync remind</tspan>
+    <tspan class="arg"> 'morgen 9:00' 'Standup prep'</tspan>
+  </text>
+  <text class="text success" x="20" y="90">  Reminder set for 2026-04-19 09:00</text>
+
+  <!-- Line 2: remind command -->
+  <text class="text" x="20" y="120">
+    <tspan class="prompt">$ </tspan>
+    <tspan class="cmd">device-sync remind</tspan>
+    <tspan class="arg"> 30m 'Check CI'</tspan>
+  </text>
+  <text class="text success" x="20" y="142">  Reminder set for 2026-04-18 15:47</text>
+
+  <!-- Line 3: reminders list -->
+  <text class="text" x="20" y="172">
+    <tspan class="prompt">$ </tspan>
+    <tspan class="cmd">device-sync reminders</tspan>
+  </text>
+  <text class="text dim" x="20" y="196">  ID    Due                  Message</text>
+  <text class="text output" x="20" y="216">  r01   2026-04-18 15:47     Check CI</text>
+  <text class="text output" x="20" y="236">  r02   2026-04-19 09:00     Standup prep</text>
+
+  <!-- Line 4: push -->
+  <text class="text" x="20" y="272">
+    <tspan class="prompt">$ </tspan>
+    <tspan class="cmd">device-sync push</tspan>
+  </text>
+  <text class="text output" x="20" y="294">  Encrypting sessions... done</text>
+  <text class="text output" x="20" y="314">  Encrypting memory... done</text>
+  <text class="text output" x="20" y="334">  Encrypting reminders... done</text>
+  <text class="text success" x="20" y="356">  Pushed to origin/main (3 files)</text>
+
+  <!-- Footer -->
+  <text class="text dim" x="400" y="400" text-anchor="middle">claude-device-sync — npm install -g claude-device-sync</text>
+</svg>
