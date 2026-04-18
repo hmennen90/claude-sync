@@ -1,6 +1,6 @@
 {
   "name": "claude-device-sync",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cross-device session storage, shared memory, and reminders for Claude Code",
   "type": "module",
   "bin": {
