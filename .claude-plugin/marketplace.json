@@ -5,7 +5,9 @@
     "email": "hendrik@mennen.dev"
   },
   "metadata": {
-    "description": "Cross-device session storage, shared memory, and reminders for Claude Code"
+    "description": "Claude Code Plugin: cross-device session sync, shared memory & reminders via encrypted Git",
+    "categories": ["productivity", "sync", "collaboration"],
+    "tags": ["cross-device", "session-sync", "memory", "reminders", "encryption", "team-mode"]
   },
   "plugins": [
     {
@@ -15,7 +17,16 @@
       "version": "1.0.0",
       "author": {
         "name": "Hendrik Mennen"
-      }
+      },
+      "permissions": {
+        "filesystem": ["~/.claude/", "~/.device-sync/"],
+        "subprocess": ["git", "simple-git"],
+        "network": ["webhooks"],
+        "keychain": ["keytar"]
+      },
+      "screenshots": [
+        "docs/demo.svg"
+      ]
     }
   ]
 }
