@@ -1,6 +1,6 @@
 {
   "name": "claude-device-sync",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Cross-device session storage, shared memory, and reminders for Claude Code. Sync sessions, memory files, and reminders across multiple devices via an encrypted private Git repository.",
   "author": {
     "name": "Hendrik Mennen",
