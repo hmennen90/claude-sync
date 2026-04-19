@@ -3,25 +3,45 @@
     "SessionStart": [
       {
         "matcher": "",
-        "command": "device-sync pull 2>/dev/null || true"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "device-sync pull 2>/dev/null || true"
+          }
+        ]
       }
     ],
     "SessionEnd": [
       {
         "matcher": "",
-        "command": "device-sync push 2>/dev/null || true"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "device-sync push 2>/dev/null || true"
+          }
+        ]
       }
     ],
     "PreToolUse": [
       {
         "matcher": "",
-        "command": "device-sync pull --memory-only 2>/dev/null || true"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "device-sync pull --memory-only 2>/dev/null || true"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
-        "command": "device-sync push --memory-only 2>/dev/null || true"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "device-sync push --memory-only 2>/dev/null || true"
+          }
+        ]
       }
     ]
   }
