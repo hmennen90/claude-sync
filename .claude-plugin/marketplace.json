@@ -6,23 +6,44 @@
   },
   "metadata": {
     "description": "Claude Code Plugin: cross-device session sync, shared memory & reminders via encrypted Git",
-    "categories": ["productivity", "sync", "collaboration"],
-    "tags": ["cross-device", "session-sync", "memory", "reminders", "encryption", "team-mode"]
+    "categories": [
+      "productivity",
+      "sync",
+      "collaboration"
+    ],
+    "tags": [
+      "cross-device",
+      "session-sync",
+      "memory",
+      "reminders",
+      "encryption",
+      "team-mode"
+    ]
   },
   "plugins": [
     {
       "name": "claude-device-sync",
       "source": "./",
       "description": "Sync Claude Code sessions, memory, and reminders across devices via encrypted Git repository",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "author": {
         "name": "Hendrik Mennen"
       },
       "permissions": {
-        "filesystem": ["~/.claude/", "~/.device-sync/"],
-        "subprocess": ["git", "simple-git"],
-        "network": ["webhooks"],
-        "keychain": ["keytar"]
+        "filesystem": [
+          "~/.claude/",
+          "~/.device-sync/"
+        ],
+        "subprocess": [
+          "git",
+          "simple-git"
+        ],
+        "network": [
+          "webhooks"
+        ],
+        "keychain": [
+          "keytar"
+        ]
       },
       "screenshots": [
         "docs/demo.svg"
